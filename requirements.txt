@@ -1,0 +1,10 @@
+dramatiq[redis, watch]==1.11.0
+requests==2.26.0
+thehive4py==1.8.1
+pydantic==1.8.2
+elasticsearch==7.13.4
+redis==3.5.3
+pytz==2021.1
+backoff==1.11.1
+# install manually: pyninox
+dependency-injector==4.35.0

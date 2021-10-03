@@ -1,0 +1,68 @@
+version: '3'
+services:
+  redis:
+    image: redis:6.2-alpine
+    restart: unless-stopped
+
+  dramatiq_worker:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: dramatiq.Dockerfile
+    env_file: .env
+    volumes:
+      - /var/log/alert_etl:/var/log/alert_etl
+    depends_on:
+      - redis
+
+  etl_qradar_common:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: etl.Dockerfile
+    env_file: .env
+    entrypoint: ./etl_qradar_common.sh
+    volumes:
+      - /var/og/alert_etl/qradar_common:/var/log/alert_etl
+    depends_on:
+      - redis
+      - dramatiq_worker
+
+  etl_elk:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: etl.Dockerfile
+    env_file: .env
+    entrypoint: ./etl_elk.sh
+    volumes:
+      - /var/log/alert_etl/elk:/var/log/alert_etl
+    depends_on:
+      - redis
+      - dramatiq_worker
+
+  etl_sh_dm_qradar:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: etl.Dockerfile
+    env_file: .env
+    entrypoint: ./etl_sh_dm_qradar.sh
+    volumes:
+      - /var/log/alert_etl/sh_dm_qradar:/var/log/alert_etl
+    depends_on:
+      - redis
+      - dramatiq_worker
+
+  etl_sh_vcm_001_qradar:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: etl.Dockerfile
+    env_file: .env
+    entrypoint: ./etl_sh_vcm_001_qradar.sh
+    volumes:
+      - /var/log/alert_etl/sh_vcm_001_qradar:/var/log/alert_etl
+    depends_on:
+      - redis
+      - dramatiq_worker
